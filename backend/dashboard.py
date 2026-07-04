@@ -3,7 +3,7 @@ import requests
 import time
 import plotly.graph_objects as go
 
-API = "http://localhost:8000"
+API = "https://srishti-2003-finguard-backend.hf.space"
 
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(

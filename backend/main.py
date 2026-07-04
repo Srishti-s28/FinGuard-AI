@@ -1,4 +1,7 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
+
 from transactions import ingest_csv, get_summary, transactions_db
 from credit import (
     compute_financial_health,
@@ -13,6 +16,17 @@ from credit import (
 
 app = FastAPI(title="FinGuard AI Backend")
 
+# -----------------------------
+# CORS (IMPORTANT for Streamlit)
+# -----------------------------
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/")
 def home():
@@ -24,7 +38,6 @@ def home():
 # -----------------------------
 @app.post("/upload-transactions")
 async def upload_transactions(file: UploadFile = File(...)):
-
     path = f"tx_{file.filename}"
 
     with open(path, "wb") as f:
@@ -101,3 +114,10 @@ def financial_advanced():
         "explanation": explanation,
         "decision_log": log
     }
+
+
+# -----------------------------
+# ENTRY POINT (Hugging Face)
+# -----------------------------
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=7860)
